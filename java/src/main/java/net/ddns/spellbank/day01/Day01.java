@@ -32,7 +32,6 @@ public class Day01 {
 
         for (var line : lines) {
             sum += getFirstNumber(line) * 10 + getSecondNumber(line.toCharArray());
-
         }
 
         return sum;
