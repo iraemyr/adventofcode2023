@@ -1,0 +1,151 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation(platform('org.junit:junit-bom:5.10.1'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+}
+
+test {
+     useJUnitPlatform()
+     testLogging {
+         events "passed", "skipped", "failed"
+     }
+ }
+
+ tasks.withType(JavaCompile) {
+     options.compilerArgs += "--enable-preview"
+ }
+ tasks.withType(Test) {
+     jvmArgs += "--enable-preview"
+ }
+ tasks.withType(JavaExec) {
+     jvmArgs += "--enable-preview"
+ }
+
+ // Registers the "dayN" task, requires the day and classpath to be passed
+ def generateTask(day, path) {
+     tasks.register("day$day", JavaExec) {
+         dependsOn('classes')
+         classpath = sourceSets.main.runtimeClasspath
+         mainClass = path
+     }
+ }
+
+ def year = "2023"
+ def sourceSet = project.sourceSets.findByName('main').java
+ def fileSeparator = java.nio.file.FileSystems.getDefault().getSeparator();
+
+ // Search through all java files in the sourceSets, that start with Day
+ // in a directory that ends with two digits, which represent the day.
+ // If the directory is 'day01', then the task will be called 'day1'
+ // For 'day11', it will be called 'day11'
+ sourceSet.filter{ it.path.endsWith('.java') }.each {
+     def fileName = it.getName()
+     def className = fileName.substring(0, fileName.length() - 5)
+
+     if (className.startsWith('Day')) {
+         def classPath = it.getParentFile().path
+                 .substring(sourceSet.srcDirs[0].path.length()+1)
+                 .replace(fileSeparator, '.')
+
+         def dayNumber = classPath.substring(classPath.length()-2)
+         generateTask(dayNumber, "$classPath.$className")
+     }
+ }
+
+ task initSource(type : Copy) {
+     onlyIf {
+         project.hasProperty('d')
+     }
+     doFirst {
+         println "initSource ${project.findProperty('d')}"
+     }
+
+     from 'templates'
+     include 'Day.template'
+     into "src/main/java/net/ddns/spellbank/day${project.findProperty('d')}"
+     rename(fileName -> "Day${project.findProperty('d')}.java")
+     expand([day: project.findProperty('d')])
+ }
+
+ task initTest(type : Copy) {
+     onlyIf {
+         project.hasProperty('d')
+     }
+     doFirst {
+         println "initTest ${project.findProperty('d')}"
+     }
+     from 'templates'
+     include 'DayTest.template'
+     into "src/test/java/net/ddns/spellbank/day${project.findProperty('d')}"
+     rename(fileName -> "TestDay${project.findProperty('d')}.java")
+     expand([day: project.findProperty('d')])
+ }
+
+ task initSourceInput(type : Copy) {
+     onlyIf {
+         project.hasProperty('d')
+     }
+
+     from 'templates'
+     include 'input1'
+     into "src/main/resources/day${project.findProperty('d')}"
+ }
+
+ task initTestInput(type : Copy) {
+     onlyIf {
+         project.hasProperty('d')
+     }
+
+     from 'templates'
+     include 'input1'
+     into "src/test/resources/day${project.findProperty('d')}"
+ }
+
+ task initDay {
+     dependsOn 'initSource'
+     dependsOn 'initTest'
+     dependsOn 'initSourceInput'
+     dependsOn 'initTestInput'
+ }
+
+ import java.nio.file.Files
+ import java.nio.file.Paths
+ import java.nio.channels.Channels
+
+ task getInputFile {
+     onlyIf {
+         project.hasProperty('d')
+     }
+     doFirst {
+         File c = new File("cookie.txt")
+         String cookie = "session=${c.text}"
+         URL website = new URL("https://adventofcode.com/${year}/day/${project.findProperty('d') as int}/input");
+         URLConnection conn = website.openConnection()
+         conn.setRequestProperty("Cookie", cookie)
+         conn.connect()
+         var rbc = Channels.newChannel(conn.getInputStream())
+         File f = new File("src/main/resources/day${project.findProperty('d')}")
+         f.mkdirs()
+         try (FileOutputStream fos = new FileOutputStream("src/main/resources/day${project.findProperty('d')}/input1")) {
+             //FileOutputStream fos = new FileOutputStream("src/main/resources/day${project.findProperty('d')}/input1")
+             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE)
+         }
+     }
+ }
+
+ task getInput(type : Copy) {
+     dependsOn 'getInputFile'
+     onlyIf {
+         project.hasProperty('d')
+     }
+     from "src/main/resources/day${project.findProperty('d')}"
+     include 'input1'
+     into "src/test/resources/day${project.findProperty('d')}"
+ }
