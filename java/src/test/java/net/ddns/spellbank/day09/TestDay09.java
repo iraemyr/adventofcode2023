@@ -24,24 +24,21 @@ class TestDay09 {
 
     @Test
     void part1() {
-        assertEquals(1987402313, Day09.part1(sequences));
+        assertEquals(1987402313, Day09.solve(sequences, true));
     }
 
     @Test
     void part1_sample() {
-        String[] lines = InputFile.getLines("day09/test1");
-        assertEquals(114, Day09.part1(sample_sequences));
+        assertEquals(114, Day09.solve(sample_sequences, true));
     }
 
     @Test
     void part2() {
-        String[] lines = InputFile.getLines("day09/input1");
-        assertEquals(900, Day09.part2(sequences));
+        assertEquals(900, Day09.solve(sequences, false));
     }
 
     @Test
     void part2_sample() {
-        String[] lines = InputFile.getLines("day09/test1");
-        assertEquals(2, Day09.part2(sample_sequences));
+        assertEquals(2, Day09.solve(sample_sequences, false));
     }
 }

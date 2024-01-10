@@ -13,25 +13,17 @@ public class Day09 {
 
         var sequences = parse(lines);
 
-        System.out.println(part1(sequences)); // 1987402313
-        System.out.println(part2(sequences)); // 900
+        System.out.println(solve(sequences, true)); // 1987402313
+        System.out.println(solve(sequences, false)); // 900
     }
 
-    public static long part1(List<List<Long>> sequences) {
+    public static long solve(List<List<Long>> sequences, boolean part1) {
         long sum = 0;
         for (var sequence: sequences) {
-            sum += getNext(sequence, true);
+            sum += getNext(sequence, part1);
         }
         return sum;
-    }
-
-    public static long part2(List<List<Long>> sequences) {
-        long sum = 0;
-        for (var sequence: sequences) {
-            sum += getNext(sequence, false);
-        }
-        return sum;
-    }
+    }1
 
     private static long getNext(List<Long> sequence, boolean future) {
         if (sequence.size() < 3) throw new IllegalArgumentException("Sequence not long enough");
