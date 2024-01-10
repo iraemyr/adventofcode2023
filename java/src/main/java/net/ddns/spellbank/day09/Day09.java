@@ -23,7 +23,7 @@ public class Day09 {
             sum += getNext(sequence, part1);
         }
         return sum;
-    }1
+    }
 
     private static long getNext(List<Long> sequence, boolean future) {
         if (sequence.size() < 3) throw new IllegalArgumentException("Sequence not long enough");
