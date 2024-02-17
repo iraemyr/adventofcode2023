@@ -71,7 +71,7 @@ public class Day16 {
             beams2.clear();
         }
     }
-    
+
     private static void stepBeam(char[][] grid, int[][]beamMap, List<Beam> beams, Beam beam) {
         int row = beam.row;
         int col = beam.col;
