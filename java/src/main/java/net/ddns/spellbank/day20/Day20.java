@@ -1,19 +1,21 @@
 package net.ddns.spellbank.day20;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.Solution;
 import net.ddns.spellbank.utils.MyUtils;
 
 import java.util.*;
 
-public class Day20 {
+public class Day20 implements Solution {
 
 
-    public static void main(String[] args) {
-        String file = "day20/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    public long solvePart1(String[] lines) {
+        return part1(lines);
+    }
 
-        System.out.println(part1(lines)); // 747304011
-        System.out.println(part2(lines)); // 220366255099387
+    @Override
+    public long solvePart2(String[] lines) {
+        return part2(lines);
     }
 
     public static long part1(String[] lines) {

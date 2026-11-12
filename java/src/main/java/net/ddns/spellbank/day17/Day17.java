@@ -1,21 +1,22 @@
 package net.ddns.spellbank.day17;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class Day17 {
+public class Day17 implements Solution {
 
-    public static void main(String[] args) {
-        String file = "day17/input1";
-        String[] lines = InputFile.getLines(file);
-        var grid = getGrid(lines);
+    @Override
+    public long solvePart1(String[] lines) {
+        return part1(getGrid(lines));
+    }
 
-        System.out.println(part1(grid)); //866
-        System.out.println(part2(grid)); //1010
+    @Override
+    public long solvePart2(String[] lines) {
+        return part2(getGrid(lines));
     }
 
     public static long part1(int[][] grid) {

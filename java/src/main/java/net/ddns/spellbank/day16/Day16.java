@@ -1,25 +1,26 @@
 package net.ddns.spellbank.day16;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Day16 {
+public class Day16 implements Solution {
     private static final int NORTH = 1;
     private static final int EAST = 2;
     private static final int SOUTH = 4;
     private static final int WEST = 8;
     public record Beam(int row, int col, int dir) {}
 
-    public static void main(String[] args) {
-        String file = "day16/input1";
-        String[] lines = InputFile.getLines(file);
-        var grid = getGrid(lines);
+    @Override
+    public long solvePart1(String[] lines) {
+        return part1(getGrid(lines));
+    }
 
-        System.out.println(part1(grid)); //7870
-        System.out.println(part2(grid)); //8143
+    @Override
+    public long solvePart2(String[] lines) {
+        return part2(getGrid(lines));
     }
 
     public static long part1(char[][] grid) {

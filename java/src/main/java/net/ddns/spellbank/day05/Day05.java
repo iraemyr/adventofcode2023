@@ -1,10 +1,10 @@
 package net.ddns.spellbank.day05;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.*;
 
-public class Day05 {
+public class Day05 implements Solution {
 
     public record Mapping(long inclusiveStart, long exclusiveEnd, long dest) implements Comparable<Mapping> {
         @Override
@@ -22,12 +22,14 @@ public class Day05 {
         }
     }
 
-    public static void main(String[] args) {
-        String file = "day05/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    public long solvePart1(String[] lines) {
+        return part1(lines);
+    }
 
-        System.out.println(part1(lines)); // 1181555926
-        System.out.println(part2(lines)); // 37806486
+    @Override
+    public long solvePart2(String[] lines) {
+        return part2(lines);
     }
 
     public static long part1(String[] lines) {

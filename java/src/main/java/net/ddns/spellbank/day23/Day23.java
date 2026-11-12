@@ -1,10 +1,10 @@
 package net.ddns.spellbank.day23;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.*;
 
-public class Day23 {
+public class Day23 implements Solution {
 
     public record ParseMapResult(Point start, Point end, char[][] map) {}
     public record Node(Point p, List<Edge> paths) {}
@@ -60,13 +60,14 @@ public class Day23 {
     }
 
 
-    public static void main(String[] args) {
-        String file = "day23/input1";
-        String[] lines = InputFile.getLines(file);
-        var result = parseMap(lines);
+    @Override
+    public long solvePart1(String[] lines) {
+        return part1(parseMap(lines));
+    }
 
-        System.out.println(part1(result)); // 2018
-        System.out.println(part2(result)); // 6406
+    @Override
+    public long solvePart2(String[] lines) {
+        return part2(parseMap(lines));
     }
 
     public static long part1(ParseMapResult info) {

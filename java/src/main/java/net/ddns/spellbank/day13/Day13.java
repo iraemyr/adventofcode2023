@@ -1,19 +1,21 @@
 package net.ddns.spellbank.day13;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.Arrays;
 
-public class Day13 {
+public class Day13 implements Solution {
 
     private record SliceBounds(int start, int end) {}
 
-    public static void main(String[] args) {
-        String file = "day13/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    public long solvePart1(String[] lines) {
+        return reflectionSum(lines, 0);
+    }
 
-        System.out.println(reflectionSum(lines, 0)); // 32035
-        System.out.println(reflectionSum(lines, 1)); // 24847
+    @Override
+    public long solvePart2(String[] lines) {
+        return reflectionSum(lines, 1);
     }
 
     public static long reflectionSum(String[] lines, int smudges) {

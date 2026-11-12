@@ -1,21 +1,26 @@
 package net.ddns.spellbank.day12;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.*;
 
-public class Day12 {
+public class Day12 implements Solution {
 
     public record ParseResult(List<char[]> rows, List<int[]> groups) {}
     public record State(int rowIndex, int groupIndex, long count) {}
 
-    public static void main(String[] args) {
-        String file = "day12/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    public long solvePart1(String[] lines) {
         var result = parse(lines);
 
-        System.out.println(part1(result.rows, result.groups)); // 7350
-        System.out.println(part2(result.rows, result.groups)); // 200097286528151
+        return part1(result.rows(), result.groups());
+    }
+
+    @Override
+    public long solvePart2(String[] lines) {
+        var result = parse(lines);
+
+        return part2(result.rows(), result.groups());
     }
 
     public static long part1(List<char[]> rows, List<int[]> groups) {

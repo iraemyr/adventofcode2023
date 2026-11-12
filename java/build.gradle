@@ -1,5 +1,11 @@
 plugins {
-    id 'java'
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(27)
+    }
 }
 
 repositories {
@@ -9,143 +15,141 @@ repositories {
 dependencies {
     testImplementation(platform('org.junit:junit-bom:5.10.1'))
     testImplementation('org.junit.jupiter:junit-jupiter')
+    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
 }
 
 test {
-     useJUnitPlatform()
-     testLogging {
-         events "passed", "skipped", "failed"
-     }
- }
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
 
- tasks.withType(JavaCompile) {
-     options.compilerArgs += "--enable-preview"
- }
- tasks.withType(Test) {
-     jvmArgs += "--enable-preview"
- }
- tasks.withType(JavaExec) {
-     jvmArgs += "--enable-preview"
- }
+application {
+    mainClass = 'net.ddns.spellbank.harness.Runner'
+}
 
- // Registers the "dayN" task, requires the day and classpath to be passed
- def generateTask(day, path) {
-     tasks.register("day$day", JavaExec) {
-         dependsOn('classes')
-         classpath = sourceSets.main.runtimeClasspath
-         mainClass = path
-     }
- }
+sourceSets {
+    jmh {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
 
- def year = "2023"
- def sourceSet = project.sourceSets.findByName('main').java
- def fileSeparator = java.nio.file.FileSystems.getDefault().getSeparator();
+dependencies {
+    jmhImplementation 'org.openjdk.jmh:jmh-core:1.37'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
+}
 
- // Search through all java files in the sourceSets, that start with Day
- // in a directory that ends with two digits, which represent the day.
- // If the directory is 'day01', then the task will be called 'day1'
- // For 'day11', it will be called 'day11'
- sourceSet.filter{ it.path.endsWith('.java') }.each {
-     def fileName = it.getName()
-     def className = fileName.substring(0, fileName.length() - 5)
+tasks.register('jmh', JavaExec) {
+    group = 'benchmark'
+    description = 'Benchmarks a day with JMH: -Pday=XX [-Ppart=1|2].'
+    classpath = sourceSets.jmh.runtimeClasspath
+    mainClass = 'org.openjdk.jmh.Main'
+    javaLauncher = javaToolchains.launcherFor(java.toolchain)
 
-     if (className.startsWith('Day')) {
-         def classPath = it.getParentFile().path
-                 .substring(sourceSet.srcDirs[0].path.length()+1)
-                 .replace(fileSeparator, '.')
+    args 'net.ddns.spellbank.harness.SolutionBenchmark', '-foe', 'true'
+    args '-p', "day=${providers.gradleProperty('day').getOrElse('1')}"
+    args '-p', "part=${providers.gradleProperty('part').getOrElse('1,2')}"
+    args '-p', "resource=${providers.gradleProperty('resource').getOrElse('input1')}"
 
-         def dayNumber = classPath.substring(classPath.length()-2)
-         generateTask(dayNumber, "$classPath.$className")
-     }
- }
+    if (providers.gradleProperty('input').isPresent()) {
+        if (providers.gradleProperty('resource').isPresent()) {
+            throw new GradleException('Choose either -Pinput or -Presource, not both.')
+        }
 
- task initSource(type : Copy) {
-     onlyIf {
-         project.hasProperty('d')
-     }
-     doFirst {
-         println "initSource ${project.findProperty('d')}"
-     }
+        args '-p', "inputFile=${file(providers.gradleProperty('input').get()).absolutePath}"
+    }
 
-     from 'templates'
-     include 'Day.template'
-     into "src/main/java/net/ddns/spellbank/day${project.findProperty('d')}"
-     rename(fileName -> "Day${project.findProperty('d')}.java")
-     expand([day: project.findProperty('d')])
- }
+    // Optional overrides for shorter or longer benchmark runs.
+    ['warmup': '-wi', 'iterations': '-i', 'forks': '-f', 'time': '-r'].each { property, flag ->
+        if (providers.gradleProperty(property).isPresent()) {
+            args flag, providers.gradleProperty(property).get()
+        }
+    }
+    if (providers.gradleProperty('time').isPresent()) {
+        args '-w', providers.gradleProperty('time').get()
+    }
+}
 
- task initTest(type : Copy) {
-     onlyIf {
-         project.hasProperty('d')
-     }
-     doFirst {
-         println "initTest ${project.findProperty('d')}"
-     }
-     from 'templates'
-     include 'DayTest.template'
-     into "src/test/java/net/ddns/spellbank/day${project.findProperty('d')}"
-     rename(fileName -> "TestDay${project.findProperty('d')}.java")
-     expand([day: project.findProperty('d')])
- }
+def year = "2023"
 
- task initSourceInput(type : Copy) {
-     onlyIf {
-         project.hasProperty('d')
-     }
+task initSource(type : Copy) {
+    onlyIf {
+        project.hasProperty('d')
+    }
+    doFirst {
+        println "initSource ${project.findProperty('d')}"
+    }
 
-     from 'templates'
-     include 'input1'
-     into "src/main/resources/day${project.findProperty('d')}"
- }
+    from 'templates'
+    include 'Day.template'
+    into "src/main/java/net/ddns/spellbank/day${project.findProperty('d')}"
+    rename(fileName -> "Day${project.findProperty('d')}.java")
+    expand([day: project.findProperty('d')])
+}
 
- task initTestInput(type : Copy) {
-     onlyIf {
-         project.hasProperty('d')
-     }
+task initTest(type : Copy) {
+    onlyIf {
+        project.hasProperty('d')
+    }
+    doFirst {
+        println "initTest ${project.findProperty('d')}"
+    }
+    from 'templates'
+    include 'DayTest.template'
+    into "src/test/java/net/ddns/spellbank/day${project.findProperty('d')}"
+    rename(fileName -> "TestDay${project.findProperty('d')}.java")
+    expand([day: project.findProperty('d')])
+}
 
-     from 'templates'
-     include 'input1'
-     into "src/test/resources/day${project.findProperty('d')}"
- }
+task initSourceInput(type : Copy) {
+    onlyIf {
+        project.hasProperty('d')
+    }
 
- task initDay {
-     dependsOn 'initSource'
-     dependsOn 'initTest'
-     dependsOn 'initSourceInput'
-     dependsOn 'initTestInput'
- }
+    from 'templates'
+    include 'input1'
+    into "src/main/resources/day${project.findProperty('d')}"
+}
 
- import java.nio.file.Files
- import java.nio.file.Paths
- import java.nio.channels.Channels
+task initDay {
+    dependsOn 'initSource'
+    dependsOn 'initTest'
+    dependsOn 'initSourceInput'
+}
 
- task getInputFile {
-     onlyIf {
-         project.hasProperty('d')
-     }
-     doFirst {
-         File c = new File("cookie.txt")
-         String cookie = "session=${c.text}"
-         URL website = new URL("https://adventofcode.com/${year}/day/${project.findProperty('d') as int}/input");
-         URLConnection conn = website.openConnection()
-         conn.setRequestProperty("Cookie", cookie)
-         conn.connect()
-         var rbc = Channels.newChannel(conn.getInputStream())
-         File f = new File("src/main/resources/day${project.findProperty('d')}")
-         f.mkdirs()
-         try (FileOutputStream fos = new FileOutputStream("src/main/resources/day${project.findProperty('d')}/input1")) {
-             //FileOutputStream fos = new FileOutputStream("src/main/resources/day${project.findProperty('d')}/input1")
-             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE)
-         }
-     }
- }
+// Allow scaffolding/downloading and running in one invocation without rewriting sources on normal builds.
+tasks.named('compileJava') {
+    mustRunAfter 'initSource'
+}
 
- task getInput(type : Copy) {
-     dependsOn 'getInputFile'
-     onlyIf {
-         project.hasProperty('d')
-     }
-     from "src/main/resources/day${project.findProperty('d')}"
-     include 'input1'
-     into "src/test/resources/day${project.findProperty('d')}"
- }
+tasks.named('compileTestJava') {
+    mustRunAfter 'initTest'
+}
+
+tasks.named('processResources') {
+    mustRunAfter 'initSourceInput', 'getInput'
+}
+
+import java.nio.channels.Channels
+
+task getInput {
+    onlyIf {
+        project.hasProperty('d')
+    }
+    doFirst {
+        File c = new File("cookie.txt")
+        String cookie = "session=${c.text}"
+        URL website = URI.create("https://adventofcode.com/${year}/day/${project.findProperty('d') as int}/input").toURL();
+        URLConnection conn = website.openConnection()
+        conn.setRequestProperty("Cookie", cookie)
+        conn.connect()
+        var rbc = Channels.newChannel(conn.getInputStream())
+        File f = new File("src/main/resources/day${project.findProperty('d')}")
+        f.mkdirs()
+        try (FileOutputStream fos = new FileOutputStream("src/main/resources/day${project.findProperty('d')}/input1")) {
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE)
+        }
+    }
+}

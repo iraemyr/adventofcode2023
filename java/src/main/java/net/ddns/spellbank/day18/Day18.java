@@ -1,22 +1,23 @@
 package net.ddns.spellbank.day18;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Day18 {
+public class Day18 implements Solution {
 
     private record Point(long row, long col) {}
     public record Instruction(char direction, int dist, String color) {}
 
-    public static void main(String[] args) {
-        String file = "day18/input1";
-        String[] lines = InputFile.getLines(file);
-        var instructions = getInstructions(lines);
+    @Override
+    public long solvePart1(String[] lines) {
+        return part1(getInstructions(lines));
+    }
 
-        System.out.println(part1(instructions)); // 62573
-        System.out.println(part2(instructions)); // 54662804037719
+    @Override
+    public long solvePart2(String[] lines) {
+        return part2(getInstructions(lines));
     }
 
     public static long part1(List<Instruction> instructions) {

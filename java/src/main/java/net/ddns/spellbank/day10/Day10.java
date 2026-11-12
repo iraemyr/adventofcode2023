@@ -1,22 +1,26 @@
 package net.ddns.spellbank.day10;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Day10 {
+public class Day10 implements Solution {
     public record Point(int x, int y){}
     public record Pipe(char type, Point[] exits){}
     public record ParseResult(Point start, Map<Point, Pipe> map){}
     public record Part1Result(long farthest, Map<Point, Character> loop){}
 
-    public static void main(String[] args) {
-        String file = "day10/input1";
-        String[] lines = InputFile.getLines(file);
-        var r = part1(lines);
-        System.out.println(r.farthest); // 7005
-        System.out.println(part2(lines.length, lines[0].length(), r.loop)); // 417
+    @Override
+    public long solvePart1(String[] lines) {
+        return part1(lines).farthest();
+    }
+
+    @Override
+    public long solvePart2(String[] lines) {
+        var result = part1(lines);
+
+        return part2(lines.length, lines[0].length(), result.loop());
     }
 
     public static Part1Result part1(String[] lines) {

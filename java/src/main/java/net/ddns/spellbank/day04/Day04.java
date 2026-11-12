@@ -1,18 +1,20 @@
 package net.ddns.spellbank.day04;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class Day04 {
+public class Day04 implements Solution {
 
-    public static void main(String[] args) {
-        String file = "day04/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    public long solvePart1(String[] lines) {
+        return part1(lines);
+    }
 
-        System.out.println(part1(lines)); // 24706
-        System.out.println(part2(lines)); // 13114317
+    @Override
+    public long solvePart2(String[] lines) {
+        return part2(lines);
     }
 
     public static long part1(String[] lines) {
