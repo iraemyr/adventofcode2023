@@ -1,5 +1,6 @@
 package net.ddns.spellbank.day13;
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 
 import java.util.Arrays;
@@ -9,11 +10,15 @@ public class Day13 implements Solution {
     private record SliceBounds(int start, int end) {}
 
     @Override
+    @ExpectedAnswer(32035L)
+    @ExpectedAnswer(value = 405L, input = "test1")
     public long solvePart1(String[] lines) {
         return reflectionSum(lines, 0);
     }
 
     @Override
+    @ExpectedAnswer(24847L)
+    @ExpectedAnswer(value = 400L, input = "test1")
     public long solvePart2(String[] lines) {
         return reflectionSum(lines, 1);
     }

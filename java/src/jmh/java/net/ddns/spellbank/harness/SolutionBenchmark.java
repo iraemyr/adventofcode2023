@@ -29,7 +29,7 @@ public class SolutionBenchmark {
     @Param({"1", "2"})
     public int part;
 
-    @Param({"input1"})
+    @Param({""})
     public String resource;
 
     @Param({""})
@@ -37,6 +37,7 @@ public class SolutionBenchmark {
 
     private Solution solution;
     private String[] lines;
+    private String[] input;
 
     @Setup(Level.Trial)
     public void load() {
@@ -45,11 +46,18 @@ public class SolutionBenchmark {
         }
 
         solution = Solutions.forDay(day);
-        lines = Inputs.load(day, resource, inputFile.isEmpty() ? null : Path.of(inputFile));
+        lines = Inputs.load(day, resource.isEmpty() ? null : resource,
+                inputFile.isEmpty() ? null : Path.of(inputFile));
+        input = lines.clone();
+    }
+
+    @Setup(Level.Invocation)
+    public void resetInput() {
+        System.arraycopy(lines, 0, input, 0, lines.length);
     }
 
     @Benchmark
     public long solve() {
-        return solution.solve(part, lines.clone());
+        return solution.solve(part, input);
     }
 }

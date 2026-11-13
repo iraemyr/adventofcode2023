@@ -1,5 +1,6 @@
 package net.ddns.spellbank.day17;
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
@@ -10,11 +11,15 @@ import java.util.PriorityQueue;
 public class Day17 implements Solution {
 
     @Override
+    @ExpectedAnswer(866L)
+    @ExpectedAnswer(value = 102L, input = "test1")
     public long solvePart1(String[] lines) {
         return part1(getGrid(lines));
     }
 
     @Override
+    @ExpectedAnswer(1010L)
+    @ExpectedAnswer(value = 94L, input = "test1")
     public long solvePart2(String[] lines) {
         return part2(getGrid(lines));
     }

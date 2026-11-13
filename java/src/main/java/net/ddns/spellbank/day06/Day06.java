@@ -1,15 +1,20 @@
 package net.ddns.spellbank.day06;
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 
 public class Day06 implements Solution {
 
     @Override
+    @ExpectedAnswer(4568778L)
+    @ExpectedAnswer(value = 288L, input = "test1")
     public long solvePart1(String[] lines) {
         return part1(lines);
     }
 
     @Override
+    @ExpectedAnswer(28973936L)
+    @ExpectedAnswer(value = 71503L, input = "test1")
     public long solvePart2(String[] lines) {
         return part2(lines);
     }

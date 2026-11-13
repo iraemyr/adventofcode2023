@@ -1,5 +1,6 @@
 package net.ddns.spellbank.day16;
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
@@ -14,11 +15,15 @@ public class Day16 implements Solution {
     public record Beam(int row, int col, int dir) {}
 
     @Override
+    @ExpectedAnswer(7870L)
+    @ExpectedAnswer(value = 46L, input = "test1")
     public long solvePart1(String[] lines) {
         return part1(getGrid(lines));
     }
 
     @Override
+    @ExpectedAnswer(8143L)
+    @ExpectedAnswer(value = 51L, input = "test1")
     public long solvePart2(String[] lines) {
         return part2(getGrid(lines));
     }

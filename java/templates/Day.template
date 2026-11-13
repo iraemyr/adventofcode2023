@@ -1,13 +1,16 @@
 package net.ddns.spellbank.day${day};
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 
 public class Day${day} implements Solution {
+    // Add @ExpectedAnswer(...) for input1, or @ExpectedAnswer(value = ..., input = "test1") for a sample.
     @Override
     public long solvePart1(String[] lines) {
         return part1(lines);
     }
 
+    // Repeat @ExpectedAnswer for each input with a verified answer.
     @Override
     public long solvePart2(String[] lines) {
         return part2(lines);

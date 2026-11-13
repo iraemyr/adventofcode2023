@@ -19,43 +19,6 @@ class HarnessTest {
     @TempDir
     Path tempDir;
 
-    @ParameterizedTest(name = "day {0} keeps both answers")
-    @CsvSource(textBlock = """
-            1, 54644, 53348
-            2, 2913, 55593
-            3, 528819, 80403602
-            4, 24706, 13114317
-            5, 1181555926, 37806486
-            6, 4568778, 28973936
-            7, 249483956, 252137472
-            8, 19783, 9177460370549
-            9, 1987402313, 900
-            10, 7005, 417
-            11, 9591768, 746962097860
-            12, 7350, 200097286528151
-            13, 32035, 24847
-            14, 109661, 90176
-            15, 514394, 236358
-            16, 7870, 8143
-            17, 866, 1010
-            18, 62573, 54662804037719
-            19, 406849, 138625360533574
-            20, 747304011, 220366255099387
-            21, 3651, 607334325965751
-            22, 432, 63166
-            23, 2018, 6406
-            """)
-    void adaptersPreserveAnswers(int day, long part1, long part2) {
-        var solution = Solutions.forDay(day);
-        var lines = Inputs.load(day, "input1", null);
-
-        long first = solution.solve(1, lines.clone());
-        long second = solution.solve(2, lines.clone());
-
-        assertEquals(part1, first);
-        assertEquals(part2, second);
-    }
-
     @Test
     void discoversAllImplementedDays() {
         assertTrue(Solutions.days().containsAll(IntStream.rangeClosed(1, 23).boxed().toList()));
@@ -111,7 +74,7 @@ class HarnessTest {
         var file = tempDir.resolve("input.txt");
         Files.writeString(file, "café\n\nlast\n", StandardCharsets.UTF_8);
 
-        var lines = Inputs.load(1, "input1", file);
+        var lines = Inputs.load(1, null, file);
 
         assertArrayEquals(new String[]{"café", "", "last"}, lines);
     }

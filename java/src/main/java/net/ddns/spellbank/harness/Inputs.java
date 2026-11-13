@@ -12,6 +12,10 @@ import java.util.Locale;
 public final class Inputs {
     private Inputs() {}
 
+    public static String[] load(int day) {
+        return load(day, null, null);
+    }
+
     public static String[] load(int day, String resource, Path file) {
         if (file != null) {
             try {
@@ -21,7 +25,9 @@ public final class Inputs {
             }
         }
 
-        return resource(String.format(Locale.ROOT, "day%02d/%s", day, resource));
+        String name = resource == null ? "input1" : resource;
+
+        return resource(String.format(Locale.ROOT, "day%02d/%s", day, name));
     }
 
     public static String[] resource(String name) {

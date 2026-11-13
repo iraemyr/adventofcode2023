@@ -1,5 +1,6 @@
 package net.ddns.spellbank.day10;
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 
 import java.util.HashMap;
@@ -12,11 +13,16 @@ public class Day10 implements Solution {
     public record Part1Result(long farthest, Map<Point, Character> loop){}
 
     @Override
+    @ExpectedAnswer(7005L)
+    @ExpectedAnswer(value = 8L, input = "test1")
     public long solvePart1(String[] lines) {
         return part1(lines).farthest();
     }
 
     @Override
+    @ExpectedAnswer(417L)
+    @ExpectedAnswer(value = 1L, input = "test1")
+    @ExpectedAnswer(value = 8L, input = "test2")
     public long solvePart2(String[] lines) {
         var result = part1(lines);
 

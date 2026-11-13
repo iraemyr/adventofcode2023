@@ -1,5 +1,6 @@
 package net.ddns.spellbank.day08;
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 import net.ddns.spellbank.utils.MyUtils;
 
@@ -9,6 +10,9 @@ import java.util.HashMap;
 public class Day08 implements Solution {
 
     @Override
+    @ExpectedAnswer(19783L)
+    @ExpectedAnswer(value = 2L, input = "test1")
+    @ExpectedAnswer(value = 6L, input = "test2")
     public long solvePart1(String[] lines) {
         var map = new HashMap<String, String[]>();
         var directions = parse(lines, map);
@@ -17,6 +21,8 @@ public class Day08 implements Solution {
     }
 
     @Override
+    @ExpectedAnswer(9177460370549L)
+    @ExpectedAnswer(value = 6L, input = "test3")
     public long solvePart2(String[] lines) {
         var map = new HashMap<String, String[]>();
         var directions = parse(lines, map);

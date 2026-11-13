@@ -1,5 +1,6 @@
 package net.ddns.spellbank.day23;
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 
 import java.util.*;
@@ -61,11 +62,15 @@ public class Day23 implements Solution {
 
 
     @Override
+    @ExpectedAnswer(2018L)
+    @ExpectedAnswer(value = 94L, input = "test1")
     public long solvePart1(String[] lines) {
         return part1(parseMap(lines));
     }
 
     @Override
+    @ExpectedAnswer(6406L)
+    @ExpectedAnswer(value = 154L, input = "test1")
     public long solvePart2(String[] lines) {
         return part2(parseMap(lines));
     }

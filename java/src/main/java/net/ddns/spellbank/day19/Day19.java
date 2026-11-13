@@ -1,5 +1,6 @@
 package net.ddns.spellbank.day19;
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ public class Day19 implements Solution {
     }
 
     @Override
+    @ExpectedAnswer(406849L)
+    @ExpectedAnswer(value = 19114L, input = "test1")
     public long solvePart1(String[] lines) {
         var workflows = new HashMap<String, Workflow>();
         var parts = new ArrayList<Part>();
@@ -46,6 +49,8 @@ public class Day19 implements Solution {
     }
 
     @Override
+    @ExpectedAnswer(138625360533574L)
+    @ExpectedAnswer(value = 167409079868000L, input = "test1")
     public long solvePart2(String[] lines) {
         var workflows = new HashMap<String, Workflow>();
         var parts = new ArrayList<Part>();

@@ -1,5 +1,6 @@
 package net.ddns.spellbank.day12;
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 
 import java.util.*;
@@ -10,6 +11,8 @@ public class Day12 implements Solution {
     public record State(int rowIndex, int groupIndex, long count) {}
 
     @Override
+    @ExpectedAnswer(7350L)
+    @ExpectedAnswer(value = 21L, input = "test1")
     public long solvePart1(String[] lines) {
         var result = parse(lines);
 
@@ -17,6 +20,8 @@ public class Day12 implements Solution {
     }
 
     @Override
+    @ExpectedAnswer(200097286528151L)
+    @ExpectedAnswer(value = 525152L, input = "test1")
     public long solvePart2(String[] lines) {
         var result = parse(lines);
 

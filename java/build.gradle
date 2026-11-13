@@ -51,7 +51,9 @@ tasks.register('jmh', JavaExec) {
     args 'net.ddns.spellbank.harness.SolutionBenchmark', '-foe', 'true'
     args '-p', "day=${providers.gradleProperty('day').getOrElse('1')}"
     args '-p', "part=${providers.gradleProperty('part').getOrElse('1,2')}"
-    args '-p', "resource=${providers.gradleProperty('resource').getOrElse('input1')}"
+    if (providers.gradleProperty('resource').isPresent()) {
+        args '-p', "resource=${providers.gradleProperty('resource').get()}"
+    }
 
     if (providers.gradleProperty('input').isPresent()) {
         if (providers.gradleProperty('resource').isPresent()) {
@@ -72,84 +74,65 @@ tasks.register('jmh', JavaExec) {
     }
 }
 
-def year = "2023"
+def year = 2023
+def requestedDay = providers.gradleProperty('d').orNull
+if (requestedDay != null && (!(requestedDay ==~ /\d{1,2}/) || requestedDay.toInteger() < 1 || requestedDay.toInteger() > 25)) {
+    throw new GradleException('Day must be between 1 and 25.')
+}
 
-task initSource(type : Copy) {
-    onlyIf {
-        project.hasProperty('d')
-    }
-    doFirst {
-        println "initSource ${project.findProperty('d')}"
-    }
+def day = requestedDay == null ? null : String.format(Locale.ROOT, '%02d', requestedDay.toInteger())
+def solutionFile = file("src/main/java/net/ddns/spellbank/day${day}/Day${day}.java")
+def inputFile = file("src/main/resources/day${day}/input1")
+def cookieFile = file('cookie.txt')
+
+tasks.register('initSource', Copy) {
+    onlyIf { day != null && !solutionFile.exists() }
 
     from 'templates'
     include 'Day.template'
-    into "src/main/java/net/ddns/spellbank/day${project.findProperty('d')}"
-    rename(fileName -> "Day${project.findProperty('d')}.java")
-    expand([day: project.findProperty('d')])
+    into solutionFile.parentFile
+    rename { "Day${day}.java" }
+    expand(day: day)
 }
 
-task initTest(type : Copy) {
-    onlyIf {
-        project.hasProperty('d')
-    }
-    doFirst {
-        println "initTest ${project.findProperty('d')}"
-    }
-    from 'templates'
-    include 'DayTest.template'
-    into "src/test/java/net/ddns/spellbank/day${project.findProperty('d')}"
-    rename(fileName -> "TestDay${project.findProperty('d')}.java")
-    expand([day: project.findProperty('d')])
-}
-
-task initSourceInput(type : Copy) {
-    onlyIf {
-        project.hasProperty('d')
-    }
+tasks.register('initSourceInput', Copy) {
+    onlyIf { day != null && !inputFile.exists() }
 
     from 'templates'
     include 'input1'
-    into "src/main/resources/day${project.findProperty('d')}"
+    into inputFile.parentFile
 }
 
-task initDay {
-    dependsOn 'initSource'
-    dependsOn 'initTest'
-    dependsOn 'initSourceInput'
+tasks.register('initDay') {
+    dependsOn 'initSource', 'initSourceInput'
+
+    doLast {
+        if (day == null) {
+            throw new GradleException('Specify a day with -Pd=XX.')
+        }
+    }
 }
 
-// Allow scaffolding/downloading and running in one invocation without rewriting sources on normal builds.
+// Order generation before compilation only when both tasks are requested.
 tasks.named('compileJava') {
     mustRunAfter 'initSource'
-}
-
-tasks.named('compileTestJava') {
-    mustRunAfter 'initTest'
 }
 
 tasks.named('processResources') {
     mustRunAfter 'initSourceInput', 'getInput'
 }
 
-import java.nio.channels.Channels
+tasks.register('getInput') {
+    onlyIf { day != null }
 
-task getInput {
-    onlyIf {
-        project.hasProperty('d')
-    }
-    doFirst {
-        File c = new File("cookie.txt")
-        String cookie = "session=${c.text}"
-        URL website = URI.create("https://adventofcode.com/${year}/day/${project.findProperty('d') as int}/input").toURL();
-        URLConnection conn = website.openConnection()
-        conn.setRequestProperty("Cookie", cookie)
-        conn.connect()
-        var rbc = Channels.newChannel(conn.getInputStream())
-        File f = new File("src/main/resources/day${project.findProperty('d')}")
-        f.mkdirs()
-        try (FileOutputStream fos = new FileOutputStream("src/main/resources/day${project.findProperty('d')}/input1")) {
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE)
+    doLast {
+        def website = URI.create("https://adventofcode.com/${year}/day/${day.toInteger()}/input").toURL()
+        def connection = website.openConnection()
+        connection.setRequestProperty('Cookie', "session=${cookieFile.text.trim()}")
+
+        try (def stream = connection.inputStream) {
+            inputFile.parentFile.mkdirs()
+            java.nio.file.Files.copy(stream, inputFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
         }
     }
 }

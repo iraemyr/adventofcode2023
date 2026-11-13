@@ -23,7 +23,7 @@ public final class Runner {
                 out.println("""
                         Usage: run --day <1-25|all> [--part <1|2|both>] [--resource <name> | --input <path>]
                                run --list
-                        Defaults: both parts, bundled input1. Prints each answer, elapsed milliseconds, and a total.
+                        Defaults: both parts, dayNN/input1. Prints each answer, elapsed milliseconds, and a total.
                         Examples: ./gradlew run --args='--day 14'
                                   ./gradlew run --args='--day 14 --part 2 --resource test1'
                         JMH:      ./gradlew jmh -Pday=14 -Ppart=2
@@ -48,8 +48,10 @@ public final class Runner {
                         continue;
                     }
 
+                    var input = lines.clone();
+
                     long start = System.nanoTime();
-                    long answer = solution.solve(part, lines.clone());
+                    long answer = solution.solve(part, input);
                     long elapsed = System.nanoTime() - start;
                     totalElapsed += elapsed;
 
@@ -71,7 +73,7 @@ public final class Runner {
         static Options parse(String[] args) {
             String day = null;
             int part = 0;
-            String resource = "input1";
+            String resource = null;
             Path file = null;
             boolean resourceSet = false;
             boolean list = false;

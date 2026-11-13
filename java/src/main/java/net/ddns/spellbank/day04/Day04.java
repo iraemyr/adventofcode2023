@@ -1,5 +1,6 @@
 package net.ddns.spellbank.day04;
 
+import net.ddns.spellbank.harness.ExpectedAnswer;
 import net.ddns.spellbank.harness.Solution;
 
 import java.util.Arrays;
@@ -8,11 +9,15 @@ import java.util.HashSet;
 public class Day04 implements Solution {
 
     @Override
+    @ExpectedAnswer(24706L)
+    @ExpectedAnswer(value = 13L, input = "test1")
     public long solvePart1(String[] lines) {
         return part1(lines);
     }
 
     @Override
+    @ExpectedAnswer(13114317L)
+    @ExpectedAnswer(value = 30L, input = "test1")
     public long solvePart2(String[] lines) {
         return part2(lines);
     }
