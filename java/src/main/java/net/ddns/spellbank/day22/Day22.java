@@ -95,15 +95,15 @@ public class Day22 implements Solution {
     }
 
     @Override
-    @ExpectedAnswer(432L)
-    @ExpectedAnswer(value = 5L, input = "test1")
+    @ExpectedAnswer("432")
+    @ExpectedAnswer(value = "5", input = "test1")
     public long solvePart1(String[] lines) {
         return part1(prepareSlabs(lines));
     }
 
     @Override
-    @ExpectedAnswer(63166L)
-    @ExpectedAnswer(value = 7L, input = "test1")
+    @ExpectedAnswer("63166")
+    @ExpectedAnswer(value = "7", input = "test1")
     public long solvePart2(String[] lines) {
         return part2(prepareSlabs(lines));
     }

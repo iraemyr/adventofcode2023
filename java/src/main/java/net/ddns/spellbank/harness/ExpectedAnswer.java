@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Repeatable(ExpectedAnswer.Cases.class)
 public @interface ExpectedAnswer {
-    long value();
+    String value();
 
     String input() default "input1";
 

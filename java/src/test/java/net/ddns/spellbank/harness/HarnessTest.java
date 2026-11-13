@@ -20,6 +20,54 @@ class HarnessTest {
     Path tempDir;
 
     @Test
+    void supportsNumericAndTextAnswers() {
+        Solution solution = new Solution() {
+            @Override
+            public String solvePart1Str(String[] lines) {
+                return String.join("\n", lines);
+            }
+
+            @Override
+            public long solvePart2(String[] lines) {
+                return 1_234_567_890_123_456_789L;
+            }
+        };
+        String[] lines = {"00123", "café", " trailing "};
+
+        long numeric = solution.solvePart2(lines);
+        String text = solution.solvePart1Str(lines);
+
+        assertEquals(1_234_567_890_123_456_789L, numeric);
+        assertEquals("00123\ncafé\n trailing ", text);
+        assertEquals(text, solution.solve(1, lines));
+        assertEquals(Long.toString(numeric), solution.solve(2, lines));
+        assertEquals(String.class, Solutions.partMethod(solution, 1).getReturnType());
+        assertEquals(long.class, Solutions.partMethod(solution, 2).getReturnType());
+        assertThrows(UnsupportedOperationException.class, () -> solution.solvePart1(lines));
+    }
+
+    @Test
+    void rejectsAmbiguousOrMissingPartImplementations() {
+        Solution solution = new Solution() {
+            @Override
+            public long solvePart1(String[] lines) {
+                return 42;
+            }
+
+            @Override
+            public String solvePart1Str(String[] lines) {
+                return "42";
+            }
+        };
+
+        var ambiguous = assertThrows(IllegalArgumentException.class, () -> Solutions.partMethod(solution, 1));
+        var missing = assertThrows(IllegalArgumentException.class, () -> Solutions.partMethod(solution, 2));
+
+        assertTrue(ambiguous.getMessage().contains("exactly one of solvePart1 or solvePart1Str"));
+        assertTrue(missing.getMessage().contains("exactly one of solvePart2 or solvePart2Str"));
+    }
+
+    @Test
     void discoversAllImplementedDays() {
         assertTrue(Solutions.days().containsAll(IntStream.rangeClosed(1, 23).boxed().toList()));
         assertThrows(IllegalArgumentException.class, () -> Solutions.forDay(0));
@@ -32,8 +80,8 @@ class HarnessTest {
         var solution = Solutions.forDay(day);
         var lines = Inputs.load(day, "test1", null);
 
-        long first = solution.solve(2, lines.clone());
-        long second = solution.solve(2, lines.clone());
+        long first = solution.solveNumeric(2, lines.clone());
+        long second = solution.solveNumeric(2, lines.clone());
 
         assertEquals(expected, first);
         assertEquals(expected, second);

@@ -10,15 +10,15 @@ public class Day20 implements Solution {
 
 
     @Override
-    @ExpectedAnswer(747304011L)
-    @ExpectedAnswer(value = 32000000L, input = "test1")
-    @ExpectedAnswer(value = 11687500L, input = "test2")
+    @ExpectedAnswer("747304011")
+    @ExpectedAnswer(value = "32000000", input = "test1")
+    @ExpectedAnswer(value = "11687500", input = "test2")
     public long solvePart1(String[] lines) {
         return part1(lines);
     }
 
     @Override
-    @ExpectedAnswer(220366255099387L)
+    @ExpectedAnswer("220366255099387")
     public long solvePart2(String[] lines) {
         return part2(lines);
     }

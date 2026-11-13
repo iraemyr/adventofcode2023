@@ -62,15 +62,15 @@ public class Day23 implements Solution {
 
 
     @Override
-    @ExpectedAnswer(2018L)
-    @ExpectedAnswer(value = 94L, input = "test1")
+    @ExpectedAnswer("2018")
+    @ExpectedAnswer(value = "94", input = "test1")
     public long solvePart1(String[] lines) {
         return part1(parseMap(lines));
     }
 
     @Override
-    @ExpectedAnswer(6406L)
-    @ExpectedAnswer(value = 154L, input = "test1")
+    @ExpectedAnswer("6406")
+    @ExpectedAnswer(value = "154", input = "test1")
     public long solvePart2(String[] lines) {
         return part2(parseMap(lines));
     }

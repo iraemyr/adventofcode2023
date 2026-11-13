@@ -10,15 +10,15 @@ public class Day14 implements Solution {
     public record Point(int row, int col) {}
 
     @Override
-    @ExpectedAnswer(109661L)
-    @ExpectedAnswer(value = 136L, input = "test1")
+    @ExpectedAnswer("109661")
+    @ExpectedAnswer(value = "136", input = "test1")
     public long solvePart1(String[] lines) {
         return part1(getGrid(lines));
     }
 
     @Override
-    @ExpectedAnswer(90176L)
-    @ExpectedAnswer(value = 64L, input = "test1")
+    @ExpectedAnswer("90176")
+    @ExpectedAnswer(value = "64", input = "test1")
     public long solvePart2(String[] lines) {
         return part2(getGrid(lines));
     }

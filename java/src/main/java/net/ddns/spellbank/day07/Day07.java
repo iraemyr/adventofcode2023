@@ -9,15 +9,15 @@ import java.util.Collections;
 public class Day07 implements Solution {
 
     @Override
-    @ExpectedAnswer(249483956L)
-    @ExpectedAnswer(value = 6440L, input = "test1")
+    @ExpectedAnswer("249483956")
+    @ExpectedAnswer(value = "6440", input = "test1")
     public long solvePart1(String[] lines) {
         return solution(lines, false);
     }
 
     @Override
-    @ExpectedAnswer(252137472L)
-    @ExpectedAnswer(value = 5905L, input = "test1")
+    @ExpectedAnswer("252137472")
+    @ExpectedAnswer(value = "5905", input = "test1")
     public long solvePart2(String[] lines) {
         return solution(lines, true);
     }

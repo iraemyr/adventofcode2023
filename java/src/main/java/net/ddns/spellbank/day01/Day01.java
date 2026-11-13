@@ -6,15 +6,15 @@ import net.ddns.spellbank.harness.Solution;
 public class Day01 implements Solution {
 
     @Override
-    @ExpectedAnswer(54644L)
-    @ExpectedAnswer(value = 142L, input = "test1")
+    @ExpectedAnswer("54644")
+    @ExpectedAnswer(value = "142", input = "test1")
     public long solvePart1(String[] lines) {
         return part1(lines);
     }
 
     @Override
-    @ExpectedAnswer(53348L)
-    @ExpectedAnswer(value = 281L, input = "test2")
+    @ExpectedAnswer("53348")
+    @ExpectedAnswer(value = "281", input = "test2")
     public long solvePart2(String[] lines) {
         return part2(lines);
     }

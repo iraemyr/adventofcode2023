@@ -1,11 +1,32 @@
 package net.ddns.spellbank.harness;
 
+/** Implement exactly one numeric or string method for each puzzle part. */
 public interface Solution {
-    long solvePart1(String[] lines);
+    default long solvePart1(String[] lines) {
+        throw new UnsupportedOperationException("Part 1 does not implement a numeric answer.");
+    }
 
-    long solvePart2(String[] lines);
+    default long solvePart2(String[] lines) {
+        throw new UnsupportedOperationException("Part 2 does not implement a numeric answer.");
+    }
 
-    default long solve(int part, String[] lines) {
+    default String solvePart1Str(String[] lines) {
+        return Long.toString(solvePart1(lines));
+    }
+
+    default String solvePart2Str(String[] lines) {
+        return Long.toString(solvePart2(lines));
+    }
+
+    default String solve(int part, String[] lines) {
+        return switch (part) {
+            case 1 -> solvePart1Str(lines);
+            case 2 -> solvePart2Str(lines);
+            default -> throw new IllegalArgumentException("Part must be 1 or 2.");
+        };
+    }
+
+    default long solveNumeric(int part, String[] lines) {
         return switch (part) {
             case 1 -> solvePart1(lines);
             case 2 -> solvePart2(lines);

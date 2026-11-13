@@ -33,13 +33,13 @@ public class Day21 implements Solution {
     }
 
     @Override
-    @ExpectedAnswer(3651L)
+    @ExpectedAnswer("3651")
     public long solvePart1(String[] lines) {
         return part1(parse(lines), 64);
     }
 
     @Override
-    @ExpectedAnswer(607334325965751L)
+    @ExpectedAnswer("607334325965751")
     public long solvePart2(String[] lines) {
         return part2(parse(lines));
     }

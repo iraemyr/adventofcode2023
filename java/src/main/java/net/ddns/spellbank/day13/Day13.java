@@ -10,15 +10,15 @@ public class Day13 implements Solution {
     private record SliceBounds(int start, int end) {}
 
     @Override
-    @ExpectedAnswer(32035L)
-    @ExpectedAnswer(value = 405L, input = "test1")
+    @ExpectedAnswer("32035")
+    @ExpectedAnswer(value = "405", input = "test1")
     public long solvePart1(String[] lines) {
         return reflectionSum(lines, 0);
     }
 
     @Override
-    @ExpectedAnswer(24847L)
-    @ExpectedAnswer(value = 400L, input = "test1")
+    @ExpectedAnswer("24847")
+    @ExpectedAnswer(value = "400", input = "test1")
     public long solvePart2(String[] lines) {
         return reflectionSum(lines, 1);
     }

@@ -10,15 +10,15 @@ public class Day03 implements Solution {
     public static record Coord(int row, int col) {};
 
     @Override
-    @ExpectedAnswer(528819L)
-    @ExpectedAnswer(value = 4361L, input = "test1")
+    @ExpectedAnswer("528819")
+    @ExpectedAnswer(value = "4361", input = "test1")
     public long solvePart1(String[] lines) {
         return part1(lines);
     }
 
     @Override
-    @ExpectedAnswer(80403602L)
-    @ExpectedAnswer(value = 467835L, input = "test1")
+    @ExpectedAnswer("80403602")
+    @ExpectedAnswer(value = "467835", input = "test1")
     public long solvePart2(String[] lines) {
         return part2(lines);
     }

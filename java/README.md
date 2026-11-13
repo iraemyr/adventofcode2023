@@ -70,8 +70,8 @@ repeat the same annotation to check samples or other inputs:
 
 ```java
 @Override
-@ExpectedAnswer(2913L)
-@ExpectedAnswer(value = 8L, input = "test1")
+@ExpectedAnswer("2913")
+@ExpectedAnswer(value = "8", input = "test1")
 public long solvePart1(String[] lines) {
     return part1(lines);
 }
@@ -81,9 +81,33 @@ For `Day02`, these annotations check `day02/input1` against `2913` and
 `day02/test1` against `8`. Add another annotation with `input = "test2"` for
 another sample. An input is relative to the day's resource directory.
 
+Expected answers are strings, so numeric and textual results use the same
+annotation. For each part, implement exactly one of the numeric or string methods:
+
+```java
+@Override
+@ExpectedAnswer("HELLO")
+public String solvePart1Str(String[] lines) {
+    return decodeMessage(lines);
+}
+```
+
+Numeric parts implement `long solvePart1(...)` or `long solvePart2(...)`.
+String-valued parts implement `String solvePart1Str(...)` or
+`String solvePart2Str(...)`, leaving the numeric variant out entirely. By default,
+the string method converts the numeric result with `Long.toString`. Numeric
+defaults throw if called directly on a string-only part. The harness validates
+that each part overrides exactly one variant and rejects both or neither.
+Place expectations on the method you implement.
+
+The runner and JMH select the implemented variant before timing. Numeric answers
+are measured as primitive `long`; conversion for display happens after timing.
+JMH consumes numeric results directly, without converting them to strings.
+
 `RegressionTest` uses a JUnit test factory to discover every annotation and create
 one named case per part and input, such as `Day02 part 1 [test1]`. Each case loads
-fresh input, runs the part, and compares the result with the annotation. A wrong
+fresh input, runs the part through its string entry point, and compares it with the
+annotation exactly, including whitespace and case. A null result, wrong
 answer or missing input fails the case. Parts without annotations have no cases
 until their answers are known; zero is a valid expected answer. Samples can be
 annotated before the real answer is known. No separate test file or answer table

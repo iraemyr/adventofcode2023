@@ -24,15 +24,15 @@ public class Day05 implements Solution {
     }
 
     @Override
-    @ExpectedAnswer(1181555926L)
-    @ExpectedAnswer(value = 35L, input = "test1")
+    @ExpectedAnswer("1181555926")
+    @ExpectedAnswer(value = "35", input = "test1")
     public long solvePart1(String[] lines) {
         return part1(lines);
     }
 
     @Override
-    @ExpectedAnswer(37806486L)
-    @ExpectedAnswer(value = 46L, input = "test1")
+    @ExpectedAnswer("37806486")
+    @ExpectedAnswer(value = "46", input = "test1")
     public long solvePart2(String[] lines) {
         return part2(lines);
     }

@@ -15,6 +15,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
 
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
@@ -36,6 +37,7 @@ public class SolutionBenchmark {
     public String inputFile;
 
     private Solution solution;
+    private boolean textAnswer;
     private String[] lines;
     private String[] input;
 
@@ -46,6 +48,7 @@ public class SolutionBenchmark {
         }
 
         solution = Solutions.forDay(day);
+        textAnswer = Solutions.partMethod(solution, part).getReturnType() == String.class;
         lines = Inputs.load(day, resource.isEmpty() ? null : resource,
                 inputFile.isEmpty() ? null : Path.of(inputFile));
         input = lines.clone();
@@ -57,7 +60,11 @@ public class SolutionBenchmark {
     }
 
     @Benchmark
-    public long solve() {
-        return solution.solve(part, input);
+    public void solve(Blackhole blackhole) {
+        if (textAnswer) {
+            blackhole.consume(solution.solve(part, input));
+        } else {
+            blackhole.consume(solution.solveNumeric(part, input));
+        }
     }
 }

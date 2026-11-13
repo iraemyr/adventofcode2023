@@ -12,15 +12,15 @@ public class Day18 implements Solution {
     public record Instruction(char direction, int dist, String color) {}
 
     @Override
-    @ExpectedAnswer(62573L)
-    @ExpectedAnswer(value = 62L, input = "test1")
+    @ExpectedAnswer("62573")
+    @ExpectedAnswer(value = "62", input = "test1")
     public long solvePart1(String[] lines) {
         return part1(getInstructions(lines));
     }
 
     @Override
-    @ExpectedAnswer(54662804037719L)
-    @ExpectedAnswer(value = 952408144115L, input = "test1")
+    @ExpectedAnswer("54662804037719")
+    @ExpectedAnswer(value = "952408144115", input = "test1")
     public long solvePart2(String[] lines) {
         return part2(getInstructions(lines));
     }

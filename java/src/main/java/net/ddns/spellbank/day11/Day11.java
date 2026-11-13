@@ -12,14 +12,14 @@ public class Day11 implements Solution {
     public record ParseResult(List<Point> points, int[] emptyRows, int[] emptyCols) {}
 
     @Override
-    @ExpectedAnswer(9591768L)
-    @ExpectedAnswer(value = 374L, input = "test1")
+    @ExpectedAnswer("9591768")
+    @ExpectedAnswer(value = "374", input = "test1")
     public long solvePart1(String[] lines) {
         return part1(parse(lines), 2);
     }
 
     @Override
-    @ExpectedAnswer(746962097860L)
+    @ExpectedAnswer("746962097860")
     public long solvePart2(String[] lines) {
         return part1(parse(lines), 1_000_000);
     }

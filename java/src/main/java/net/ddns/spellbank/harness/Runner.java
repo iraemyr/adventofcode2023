@@ -48,14 +48,26 @@ public final class Runner {
                         continue;
                     }
 
+                    boolean textAnswer = Solutions.partMethod(solution, part).getReturnType() == String.class;
                     var input = lines.clone();
+                    String answer;
+                    long elapsed;
 
-                    long start = System.nanoTime();
-                    long answer = solution.solve(part, input);
-                    long elapsed = System.nanoTime() - start;
+                    if (textAnswer) {
+                        long start = System.nanoTime();
+                        answer = solution.solve(part, input);
+                        elapsed = System.nanoTime() - start;
+                    } else {
+                        long start = System.nanoTime();
+                        long numeric = solution.solveNumeric(part, input);
+                        elapsed = System.nanoTime() - start;
+
+                        answer = Long.toString(numeric);
+                    }
+
                     totalElapsed += elapsed;
 
-                    out.printf(Locale.ROOT, "Day %02d part %d: %d (%.3f ms)%n",
+                    out.printf(Locale.ROOT, "Day %02d part %d: %s (%.3f ms)%n",
                             day, part, answer, elapsed / 1_000_000.0);
                 }
             }
