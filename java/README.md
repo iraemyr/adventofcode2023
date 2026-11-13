@@ -53,6 +53,102 @@ Override the defaults for a quick benchmark smoke test:
 ./gradlew jmh -Pday=14 -Ppart=2 -Presource=test1 -Pforks=1 -Pwarmup=1 -Piterations=1 -Ptime=100ms
 ```
 
+Add `-Pjfr` to record a run or benchmark with Java Flight Recorder (JFR). No extra
+Java dependencies are needed; recording support is included in JDK 27. All
+commands below run from this `java` directory.
+
+Use the runner to inspect startup or a complete solution run. The usual day,
+part, and input options still apply:
+
+```sh
+./gradlew run -Pjfr --args='--day 14 --part 2'
+./gradlew run -Pjfr --args='--day 14 --part 2 --resource test1'
+./gradlew run -Pjfr --args='--day all'
+```
+
+The runner uses the JDK's `profile` settings and saves the whole application run,
+including startup and input loading, to `build/reports/jfr/run.jfr` on JVM exit.
+Each recorded run replaces that file. Very short runs may contain few CPU samples;
+use JMH for longer recordings of repeated solution invocations.
+
+Use JMH to investigate a particular part after JVM warmup. For example, this
+records five two-second measurement iterations after three two-second warmup
+iterations, using one benchmark JVM fork:
+
+```sh
+./gradlew jmh -Pjfr -Pday=14 -Ppart=2 -Pforks=1 -Ptime=2s
+```
+
+Add `-Presource=test1` for a bundled sample or `-Pinput=/path/to/input.txt` for an
+external input. Omit `-Ppart` to profile both parts separately. The existing
+`-Pwarmup`, `-Piterations`, and `-Ptime` overrides also work with JFR; `-Ptime`
+sets the duration of each warmup and measurement iteration.
+
+JMH uses its built-in JFR profiler with `profile` settings, recording measurement
+iterations after warmup in the benchmark JVM. It prints the recording paths under
+`build/reports/jfr/<benchmark-and-parameters>/profile.jfr`. Select one fork to keep
+a single recording: multiple forks with the same parameters overwrite that path,
+so only the last fork's recording remains. JFR requires at least one fork
+(`-Pforks=0` is rejected). Copy recordings elsewhere before rerunning the same
+benchmark if you want to compare versions.
+
+The JMH recording covers activity throughout the measurement phase, including
+invocation setup and JMH machinery. It is broader than the timed `solve` method:
+input array copying remains excluded from benchmark timings, but may appear in
+the profile.
+
+For interactive analysis, install
+[JDK Mission Control](https://www.oracle.com/java/technologies/jdk-mission-control.html)
+separately from the JDK and open the recording with **File → Open File**. Start
+with these views:
+
+- **Method Profiling:** sort by sample count and expand stack traces to find
+  expensive code under `net.ddns.spellbank`. Sample percentages estimate where
+  execution time is spent; they are not exact method timings or invocation counts.
+- **Memory:** inspect allocated classes and allocation sites for temporary object
+  creation, then follow their stack traces back to the solution.
+- **Garbage Collections:** check pause duration and frequency to see whether GC
+  contributes to execution cost.
+- **Automated Analysis Results:** review potential problems and inspect their
+  supporting events before deciding what to optimize.
+
+See the [Mission Control analysis guide](https://docs.oracle.com/en/java/java-components/jdk-mission-control/9/user-guide/using-jdk-flight-recorder.html)
+for navigation and filtering details.
+
+For terminal analysis, use the `jfr` tool from your JDK's `bin` directory. Set
+`recording` to the runner output or to a JMH `profile.jfr` path printed by the
+benchmark; quote paths that contain spaces:
+
+```sh
+recording=build/reports/jfr/run.jfr
+
+jfr summary "$recording"
+jfr view hot-methods "$recording"
+jfr view allocation-by-site "$recording"
+jfr view gc-pauses "$recording"
+jfr print --events jdk.ExecutionSample "$recording"
+```
+
+`summary` shows recording duration and event counts. `hot-methods` highlights
+frequently sampled methods, `allocation-by-site` groups sampled allocations by
+their source, and `gc-pauses` lists garbage collection pauses. `print` shows the
+individual CPU samples and their stack traces. If a view is empty, check the
+event counts and collect a longer JMH recording; a short recording with no
+samples does not establish that the solution has no hotspots or allocations.
+
+If `jfr` is not on `PATH`, use `"$JAVA_HOME/bin/jfr"` with `JAVA_HOME` pointing to
+your JDK 27 installation. On macOS you can locate it with `java_home`, for example:
+
+```sh
+JFR="$(/usr/libexec/java_home -v 27)/bin/jfr"
+"$JFR" view hot-methods "$recording"
+```
+
+Recording adds profiling overhead, so collect baseline timings without `-Pjfr`.
+After changing a solution, rerun the same benchmark with the same day, part, input,
+and iteration settings to check whether timings improve.
+Recordings are ignored by Git; `./gradlew clean` removes those under `build`.
+
 The application can also run without Gradle. `./gradlew installDist` creates
 `build/install/java/bin/java`; use the same arguments, for example
 `build/install/java/bin/java --day 14`. Its bundled inputs work from inside JARs.

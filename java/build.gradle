@@ -29,6 +29,20 @@ application {
     mainClass = 'net.ddns.spellbank.harness.Runner'
 }
 
+def jfrEnabled = providers.gradleProperty('jfr').isPresent()
+def jfrDirectory = layout.buildDirectory.dir('reports/jfr')
+
+tasks.named('run', JavaExec) {
+    if (jfrEnabled) {
+        def recording = jfrDirectory.get().file('run.jfr').asFile
+        jvmArgs "-XX:StartFlightRecording=settings=profile,dumponexit=true,filename=\"${recording.absolutePath}\""
+
+        doFirst {
+            recording.parentFile.mkdirs()
+        }
+    }
+}
+
 sourceSets {
     jmh {
         compileClasspath += sourceSets.main.output
@@ -49,6 +63,14 @@ tasks.register('jmh', JavaExec) {
     javaLauncher = javaToolchains.launcherFor(java.toolchain)
 
     args 'net.ddns.spellbank.harness.SolutionBenchmark', '-foe', 'true'
+    if (jfrEnabled) {
+        if (providers.gradleProperty('forks').getOrElse('2').toInteger() < 1) {
+            throw new GradleException('JFR profiling requires at least one JMH fork; use -Pforks=1 or higher.')
+        }
+
+        args '-prof', "jfr:dir=${jfrDirectory.get().asFile.absolutePath}"
+    }
+
     args '-p', "day=${providers.gradleProperty('day').getOrElse('1')}"
     args '-p', "part=${providers.gradleProperty('part').getOrElse('1,2')}"
     if (providers.gradleProperty('resource').isPresent()) {
