@@ -3,6 +3,12 @@
 Requires JDK 27. Run commands from this directory using the Gradle wrapper
 (`gradlew.bat` on Windows). Build and run all tests with `./gradlew clean build`.
 
+Custom benchmarking, profiling, day scaffolding, and input download tasks live in
+the script plugin [`gradle/advent-of-code.gradle`](gradle/advent-of-code.gradle).
+When copying this project to another year, update `aocYear` in
+[`gradle.properties`](gradle.properties). Input downloads use that year; it can
+also be overridden for a command with `-PaocYear=2024`.
+
 All solutions use the same entry point. Run a day, one part, or all implemented days:
 
 ```sh
