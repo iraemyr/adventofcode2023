@@ -13,28 +13,39 @@ public class Day15 implements Solution {
     @Override
     @ExpectedAnswer("514394")
     @ExpectedAnswer(value = "1320", input = "test1")
-    public long solvePart1(String[] lines) {
-        return part1(lines);
+    public long solvePart1(String input) {
+        return part1(input.stripTrailing());
     }
 
     @Override
     @ExpectedAnswer("236358")
     @ExpectedAnswer(value = "145", input = "test1")
-    public long solvePart2(String[] lines) {
-        return part2(lines);
+    public long solvePart2(String input) {
+        return part2(input.stripTrailing());
     }
 
     public static long part1(String[] lines) {
+        return part1(lines[0]);
+    }
+
+    public static long part1(String input) {
         long sum = 0;
-        for (var field : lines[0].split(",")) sum += hash(field);
+
+        for (var field : input.split(",")) sum += hash(field);
+
         return sum;
     }
 
     public static long part2(String[] lines) {
+        return part2(lines[0]);
+    }
+
+    public static long part2(String sequence) {
         long sum = 0;
         List<Entry>[] map = new ArrayList[256];
         for (int i = 0; i < 256; i++) map[i] = new ArrayList<Entry>();
-        for (var input : lines[0].split(",")) {
+
+        for (var input : sequence.split(",")) {
             var fields = input.split("=");
             if (fields.length == 2) {
                 var key = fields[0];
@@ -50,6 +61,7 @@ public class Day15 implements Solution {
             for (int j = 0; j < bucket.size(); j++)
                 sum += (long) (i + 1) * (j + 1) * bucket.get(j).value;
         }
+
         return sum;
     }
 

@@ -5,6 +5,7 @@ import net.ddns.spellbank.harness.Solution;
 
 public class Day${day} implements Solution {
     // Choose numeric or string answers independently for each part; implement only one variant per part.
+    // Input defaults to String[] lines. For the full file (including line endings), use String input instead.
 
     // ExpectedAnswer values must always be strings, including numeric answers (for example, "42").
     // Add @ExpectedAnswer("...") for input1, or @ExpectedAnswer(value = "...", input = "test1") for a sample.

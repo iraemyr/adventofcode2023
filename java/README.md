@@ -19,8 +19,8 @@ All solutions use the same entry point. Run a day, one part, or all implemented 
 ```
 
 Each part prints its answer and one-shot elapsed time in milliseconds. The timer
-includes input parsing and solving; input file loading, input array copying,
-solution discovery, and printing happen outside the timer. The run ends with the
+includes input parsing and solving; input file loading, splitting into lines,
+input array copying, solution discovery, and printing happen outside the timer. The run ends with the
 total measured time across the selected parts and days. These are cold, single-run timings. Use JMH for
 measurements with warmup and separate JVM forks.
 
@@ -47,8 +47,9 @@ and a bundled resource or external input:
 
 JMH defaults to day 1, two forks, three one-second warmup iterations, and five
 one-second measurement iterations per part. It reports average milliseconds per
-operation and an error estimate. Input is loaded once per trial; a reusable array
-is reset before each invocation, outside the measured method. Each invocation
+operation and an error estimate. Input is loaded once per trial; for array input,
+a reusable array is reset before each invocation, outside the measured method.
+String input is immutable and reused directly. Each invocation
 parses its own data, including mutable grids and slabs. Input loading and array
 copying are excluded, as in the normal runner. JMH consumes the returned
 answer. Benchmark sources and dependencies are isolated in the `jmh` source set.
@@ -201,6 +202,27 @@ the string method converts the numeric result with `Long.toString`. Numeric
 defaults throw if called directly on a string-only part. The harness validates
 that each part overrides exactly one variant and rejects both or neither.
 Place expectations on the method you implement.
+
+Parts can also accept a single `String` instead of `String[]`. Choose the input
+type independently for each part, and implement exactly one of the four
+combinations of input and answer types. For example:
+
+```java
+@Override
+@ExpectedAnswer(value = "1320", input = "test1")
+public long solvePart1(String input) {
+    return hashSequence(input.stripTrailing());
+}
+```
+
+String input contains the complete UTF-8 file, including blank lines, original
+line endings, and any trailing newline. Trim or split it inside the solution as
+needed. Array input keeps the existing behavior: one string per line, without
+line terminators. Textual answers can use `String solvePart1Str(String input)`
+or `String solvePart2Str(String input)` as well. Place `@ExpectedAnswer` on the
+chosen overload; discovery, the runner, regression tests, and JMH use its input
+type automatically. Day 15 demonstrates string input. Scaffolding continues to
+default to arrays, which suit most days.
 
 The runner and JMH select the implemented variant before timing. Numeric answers
 are measured as primitive `long`; conversion for display happens after timing.

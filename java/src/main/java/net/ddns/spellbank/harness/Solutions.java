@@ -32,16 +32,23 @@ public final class Solutions {
 
         String name = "solvePart" + part;
         try {
-            var numeric = solution.getClass().getMethod(name, String[].class);
-            var text = solution.getClass().getMethod(name + "Str", String[].class);
-            boolean hasNumeric = numeric.getDeclaringClass() != Solution.class;
-            boolean hasText = text.getDeclaringClass() != Solution.class;
-            if (hasNumeric == hasText) {
-                throw new IllegalArgumentException(solution.getClass().getSimpleName()
-                        + " must implement exactly one of " + name + " or " + name + "Str.");
+            var methods = new ArrayList<Method>();
+            for (var inputType : List.of(String[].class, String.class)) {
+                for (var methodName : List.of(name, name + "Str")) {
+                    var method = solution.getClass().getMethod(methodName, inputType);
+                    if (method.getDeclaringClass() != Solution.class) {
+                        methods.add(method);
+                    }
+                }
             }
 
-            return hasNumeric ? numeric : text;
+            if (methods.size() != 1) {
+                throw new IllegalArgumentException(solution.getClass().getSimpleName()
+                        + " must implement exactly one of " + name + " or " + name
+                        + "Str, taking either String[] or String.");
+            }
+
+            return methods.getFirst();
         } catch (NoSuchMethodException e) {
             throw new IllegalStateException("Cannot resolve solution part " + part, e);
         }

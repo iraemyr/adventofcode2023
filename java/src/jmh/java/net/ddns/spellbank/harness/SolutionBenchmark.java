@@ -38,6 +38,8 @@ public class SolutionBenchmark {
 
     private Solution solution;
     private boolean textAnswer;
+    private boolean stringInput;
+    private String text;
     private String[] lines;
     private String[] input;
 
@@ -48,20 +50,33 @@ public class SolutionBenchmark {
         }
 
         solution = Solutions.forDay(day);
-        textAnswer = Solutions.partMethod(solution, part).getReturnType() == String.class;
-        lines = Inputs.load(day, resource.isEmpty() ? null : resource,
+        var method = Solutions.partMethod(solution, part);
+        textAnswer = method.getReturnType() == String.class;
+        stringInput = method.getParameterTypes()[0] == String.class;
+        text = Inputs.loadString(day, resource.isEmpty() ? null : resource,
                 inputFile.isEmpty() ? null : Path.of(inputFile));
-        input = lines.clone();
+        if (!stringInput) {
+            lines = text.lines().toArray(String[]::new);
+            input = lines.clone();
+        }
     }
 
     @Setup(Level.Invocation)
     public void resetInput() {
-        System.arraycopy(lines, 0, input, 0, lines.length);
+        if (!stringInput) {
+            System.arraycopy(lines, 0, input, 0, lines.length);
+        }
     }
 
     @Benchmark
     public void solve(Blackhole blackhole) {
-        if (textAnswer) {
+        if (stringInput) {
+            if (textAnswer) {
+                blackhole.consume(solution.solve(part, text));
+            } else {
+                blackhole.consume(solution.solveNumeric(part, text));
+            }
+        } else if (textAnswer) {
             blackhole.consume(solution.solve(part, input));
         } else {
             blackhole.consume(solution.solveNumeric(part, input));

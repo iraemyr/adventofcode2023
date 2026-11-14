@@ -23,9 +23,11 @@ class RegressionTest {
                     int selectedPart = part;
                     String name = String.format(Locale.ROOT, "Day%02d part %d [%s]", day, part, expected.input());
                     tests.add(dynamicTest(name, () -> {
-                        var lines = Inputs.load(day, expected.input(), null);
+                        var input = Inputs.loadString(day, expected.input(), null);
 
-                        String actual = solution.solve(selectedPart, lines);
+                        String actual = method.getParameterTypes()[0] == String.class
+                                ? solution.solve(selectedPart, input)
+                                : solution.solve(selectedPart, input.lines().toArray(String[]::new));
 
                         assertNotNull(actual, "Solution returned no answer");
                         assertEquals(expected.value(), actual);

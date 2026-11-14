@@ -41,25 +41,29 @@ public final class Runner {
 
             for (int day : days) {
                 var solution = Solutions.forDay(day);
-                var lines = Inputs.load(day, options.resource(), options.file());
+                var text = Inputs.loadString(day, options.resource(), options.file());
+                var lines = text.lines().toArray(String[]::new);
 
                 for (int part = 1; part <= 2; part++) {
                     if (options.part() != 0 && options.part() != part) {
                         continue;
                     }
 
-                    boolean textAnswer = Solutions.partMethod(solution, part).getReturnType() == String.class;
-                    var input = lines.clone();
+                    var method = Solutions.partMethod(solution, part);
+                    boolean textAnswer = method.getReturnType() == String.class;
+                    boolean stringInput = method.getParameterTypes()[0] == String.class;
+                    var input = stringInput ? null : lines.clone();
                     String answer;
                     long elapsed;
 
                     if (textAnswer) {
                         long start = System.nanoTime();
-                        answer = solution.solve(part, input);
+                        answer = stringInput ? solution.solve(part, text) : solution.solve(part, input);
                         elapsed = System.nanoTime() - start;
                     } else {
                         long start = System.nanoTime();
-                        long numeric = solution.solveNumeric(part, input);
+                        long numeric = stringInput
+                                ? solution.solveNumeric(part, text) : solution.solveNumeric(part, input);
                         elapsed = System.nanoTime() - start;
 
                         answer = Long.toString(numeric);
