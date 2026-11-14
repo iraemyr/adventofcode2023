@@ -1,13 +1,14 @@
 package net.ddns.spellbank.day21;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.ExpectedAnswer;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Day21 {
+public class Day21 implements Solution {
 
     public record ParseResult(Point start, char[][] grid) {}
     public record Point(int row, int col) {
@@ -31,13 +32,16 @@ public class Day21 {
         }
     }
 
-    public static void main(String[] args) {
-        String file = "day21/input1";
-        String[] lines = InputFile.getLines(file);
-        var info = parse(lines);
+    @Override
+    @ExpectedAnswer("3651")
+    public long solvePart1(String[] lines) {
+        return part1(parse(lines), 64);
+    }
 
-        System.out.println(part1(info, 64)); // 3651
-        System.out.println(part2(info)); // 607334325965751
+    @Override
+    @ExpectedAnswer("607334325965751")
+    public long solvePart2(String[] lines) {
+        return part2(parse(lines));
     }
 
     public static long part1(ParseResult info, int steps) {

@@ -1,20 +1,25 @@
 package net.ddns.spellbank.day09;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.ExpectedAnswer;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Day09 {
+public class Day09 implements Solution {
 
-    public static void main(String[] args) {
-        String file = "day09/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    @ExpectedAnswer("1987402313")
+    @ExpectedAnswer(value = "114", input = "test1")
+    public long solvePart1(String[] lines) {
+        return solve(parse(lines), true);
+    }
 
-        var sequences = parse(lines);
-
-        System.out.println(solve(sequences, true)); // 1987402313
-        System.out.println(solve(sequences, false)); // 900
+    @Override
+    @ExpectedAnswer("900")
+    @ExpectedAnswer(value = "2", input = "test1")
+    public long solvePart2(String[] lines) {
+        return solve(parse(lines), false);
     }
 
     public static long solve(List<List<Long>> sequences, boolean part1) {

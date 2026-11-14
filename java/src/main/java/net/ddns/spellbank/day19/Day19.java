@@ -1,13 +1,14 @@
 package net.ddns.spellbank.day19;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.ExpectedAnswer;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Day19 {
+public class Day19 implements Solution {
     public record Part(int x, int m, int a, int s) {
         public int getAtt(char c) {
             return switch (c) {
@@ -36,15 +37,26 @@ public class Day19 {
         }
     }
 
-    public static void main(String[] args) {
-        String file = "day19/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    @ExpectedAnswer("406849")
+    @ExpectedAnswer(value = "19114", input = "test1")
+    public long solvePart1(String[] lines) {
         var workflows = new HashMap<String, Workflow>();
         var parts = new ArrayList<Part>();
         parse(lines, workflows, parts);
 
-        System.out.println(part1(workflows, parts)); // 406849
-        System.out.println(part2(workflows)); // 138625360533574
+        return part1(workflows, parts);
+    }
+
+    @Override
+    @ExpectedAnswer("138625360533574")
+    @ExpectedAnswer(value = "167409079868000", input = "test1")
+    public long solvePart2(String[] lines) {
+        var workflows = new HashMap<String, Workflow>();
+        var parts = new ArrayList<Part>();
+        parse(lines, workflows, parts);
+
+        return part2(workflows);
     }
 
     public static long part1(Map<String, Workflow> workflows, List<Part> parts) {

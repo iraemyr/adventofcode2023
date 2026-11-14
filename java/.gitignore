@@ -4,6 +4,9 @@
 # Log file
 *.log
 
+# Java Flight Recorder recordings
+*.jfr
+
 # BlueJ files
 *.ctxt
 

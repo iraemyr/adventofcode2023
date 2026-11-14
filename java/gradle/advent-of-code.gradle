@@ -1,0 +1,157 @@
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+
+// Runner profiling.
+def jfrEnabled = providers.gradleProperty('jfr').isPresent()
+def jfrDirectory = layout.buildDirectory.dir('reports/jfr')
+
+tasks.named('run', JavaExec) {
+    if (jfrEnabled) {
+        def recording = jfrDirectory.get().file('run.jfr').asFile
+        jvmArgs "-XX:StartFlightRecording=settings=profile,dumponexit=true,filename=\"${recording.absolutePath}\""
+
+        doFirst {
+            recording.parentFile.mkdirs()
+        }
+    }
+}
+
+// JMH benchmarks.
+sourceSets {
+    jmh {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+def jmhVersion = '1.37'
+
+dependencies {
+    jmhImplementation "org.openjdk.jmh:jmh-core:${jmhVersion}"
+    jmhAnnotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
+}
+
+tasks.register('jmh', JavaExec) {
+    group = 'benchmark'
+    description = 'Benchmarks a day with JMH: -Pday=XX [-Ppart=1|2].'
+
+    def resource = providers.gradleProperty('resource').orNull
+    def input = providers.gradleProperty('input').orNull
+    def forks = providers.gradleProperty('forks').getOrElse('2')
+
+    if (input != null && resource != null) {
+        throw new GradleException('Choose either -Pinput or -Presource, not both.')
+    }
+
+    if (jfrEnabled && forks.toInteger() < 1) {
+        throw new GradleException('JFR profiling requires at least one JMH fork; use -Pforks=1 or higher.')
+    }
+
+    classpath = sourceSets.jmh.runtimeClasspath
+    mainClass = 'org.openjdk.jmh.Main'
+    javaLauncher = javaToolchains.launcherFor(java.toolchain)
+
+    args 'net.ddns.spellbank.harness.SolutionBenchmark', '-foe', 'true'
+
+    args '-p', "day=${providers.gradleProperty('day').getOrElse('1')}"
+    args '-p', "part=${providers.gradleProperty('part').getOrElse('1,2')}"
+
+    if (resource != null) {
+        args '-p', "resource=${resource}"
+    }
+
+    if (input != null) {
+        args '-p', "inputFile=${file(input).absolutePath}"
+    }
+
+    // Optional overrides for shorter or longer benchmark runs.
+    def optionFlags = [
+        warmup: ['-wi'],
+        iterations: ['-i'],
+        forks: ['-f'],
+        time: ['-r', '-w']
+    ]
+
+    optionFlags.each { property, flags ->
+        def value = providers.gradleProperty(property).orNull
+        if (value != null) {
+            flags.each { flag -> args flag, value }
+        }
+    }
+
+    if (jfrEnabled) {
+        args '-prof', "jfr:dir=${jfrDirectory.get().asFile.absolutePath}"
+    }
+}
+
+// Day scaffolding and input downloads.
+def requestedDay = providers.gradleProperty('d').orNull
+
+if (requestedDay != null) {
+    if (!(requestedDay ==~ /\d{1,2}/) || !(requestedDay.toInteger() in 1..25)) {
+        throw new GradleException('Day must be between 1 and 25.')
+    }
+}
+
+def day = requestedDay == null ? null : String.format(Locale.ROOT, '%02d', requestedDay.toInteger())
+def solutionFile = file("src/main/java/net/ddns/spellbank/day${day}/Day${day}.java")
+def inputFile = file("src/main/resources/day${day}/input1")
+
+tasks.register('initSource', Copy) {
+    onlyIf { day != null && !solutionFile.exists() }
+
+    from 'templates'
+    include 'Day.template'
+    into solutionFile.parentFile
+    rename { "Day${day}.java" }
+    expand(day: day)
+}
+
+tasks.register('initSourceInput', Copy) {
+    onlyIf { day != null && !inputFile.exists() }
+
+    from 'templates'
+    include 'input1'
+    into inputFile.parentFile
+}
+
+tasks.register('initDay') {
+    group = 'advent of code'
+    description = 'Creates solution and input files without overwriting existing files: -Pd=XX.'
+    dependsOn 'initSource', 'initSourceInput'
+
+    doLast {
+        if (day == null) {
+            throw new GradleException('Specify a day with -Pd=XX.')
+        }
+    }
+}
+
+tasks.register('getInput') {
+    group = 'advent of code'
+    description = 'Downloads input for the configured Advent of Code year: -Pd=XX.'
+    onlyIf { day != null }
+
+    doLast {
+        def year = providers.gradleProperty('aocYear').get()
+        def cookieFile = file('cookie.txt')
+        def website = URI.create("https://adventofcode.com/${year}/day/${day.toInteger()}/input").toURL()
+
+        def connection = website.openConnection()
+        connection.setRequestProperty('Cookie', "session=${cookieFile.text.trim()}")
+
+        try (def stream = connection.inputStream) {
+            inputFile.parentFile.mkdirs()
+            Files.copy(stream, inputFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+    }
+}
+
+// Order generated sources and inputs before compilation when both tasks are requested.
+tasks.named('compileJava') {
+    mustRunAfter 'initSource'
+}
+
+tasks.named('processResources') {
+    mustRunAfter 'initSourceInput', 'getInput'
+}

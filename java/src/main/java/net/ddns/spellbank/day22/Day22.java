@@ -1,10 +1,11 @@
 package net.ddns.spellbank.day22;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.ExpectedAnswer;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.*;
 
-public class Day22 {
+public class Day22 implements Solution {
 
     public record Point(int x, int y, int z) {}
 
@@ -93,16 +94,29 @@ public class Day22 {
         }
     }
 
-    public static void main(String[] args) {
-        String file = "day22/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    @ExpectedAnswer("432")
+    @ExpectedAnswer(value = "5", input = "test1")
+    public long solvePart1(String[] lines) {
+        return part1(prepareSlabs(lines));
+    }
+
+    @Override
+    @ExpectedAnswer("63166")
+    @ExpectedAnswer(value = "7", input = "test1")
+    public long solvePart2(String[] lines) {
+        return part2(prepareSlabs(lines));
+    }
+
+    private static List<Slab> prepareSlabs(String[] lines) {
         var slabs = parseSlabs(lines);
         Collections.sort(slabs);
         var map = new HashMap<Point, Slab>();
-        for (var slab : slabs) slab.drop(map);
+        for (var slab : slabs) {
+            slab.drop(map);
+        }
 
-        System.out.println(part1(slabs)); // 432
-        System.out.println(part2(slabs)); // 63166
+        return slabs;
     }
 
     public static long part1(List<Slab> slabs) {

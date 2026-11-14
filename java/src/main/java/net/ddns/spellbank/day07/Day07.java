@@ -1,18 +1,25 @@
 package net.ddns.spellbank.day07;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.ExpectedAnswer;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Day07 {
+public class Day07 implements Solution {
 
-    public static void main(String[] args) {
-        String file = "day07/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    @ExpectedAnswer("249483956")
+    @ExpectedAnswer(value = "6440", input = "test1")
+    public long solvePart1(String[] lines) {
+        return solution(lines, false);
+    }
 
-        System.out.println(solution(lines, false)); // 249483956
-        System.out.println(solution(lines, true)); // 252137472
+    @Override
+    @ExpectedAnswer("252137472")
+    @ExpectedAnswer(value = "5905", input = "test1")
+    public long solvePart2(String[] lines) {
+        return solution(lines, true);
     }
 
     public static long solution(String[] lines, boolean part2) {

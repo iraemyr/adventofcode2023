@@ -1,15 +1,25 @@
 package net.ddns.spellbank.day${day};
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.ExpectedAnswer;
+import net.ddns.spellbank.harness.Solution;
 
-public class Day${day} {
+public class Day${day} implements Solution {
+    // Choose numeric or string answers independently for each part; implement only one variant per part.
+    // Input defaults to String[] lines. For the full file (including line endings), use String input instead.
 
-    public static void main(String[] args) {
-        String file = "day${day}/input1";
-        String[] lines = InputFile.getLines(file);
+    // ExpectedAnswer values must always be strings, including numeric answers (for example, "42").
+    // Add @ExpectedAnswer("...") for input1, or @ExpectedAnswer(value = "...", input = "test1") for a sample.
+    // For a string answer, replace this method with public String solvePart1Str(String[] lines).
+    @Override
+    public long solvePart1(String[] lines) {
+        return part1(lines);
+    }
 
-        System.out.println(part1(lines));
-        System.out.println(part2(lines));
+    // Repeat @ExpectedAnswer for each input with a verified answer.
+    // For a string answer, replace this method with public String solvePart2Str(String[] lines).
+    @Override
+    public long solvePart2(String[] lines) {
+        return part2(lines);
     }
 
     public static long part1(String[] lines) {
@@ -19,5 +29,4 @@ public class Day${day} {
     public static long part2(String[] lines) {
         return 0;
     }
-
 }

@@ -1,33 +1,51 @@
 package net.ddns.spellbank.day15;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.ExpectedAnswer;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Day15 {
+public class Day15 implements Solution {
 
     public record Entry(String key, int value) {}
 
-    public static void main(String[] args) {
-        String file = "day15/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    @ExpectedAnswer("514394")
+    @ExpectedAnswer(value = "1320", input = "test1")
+    public long solvePart1(String input) {
+        return part1(input.stripTrailing());
+    }
 
-        System.out.println(part1(lines)); //514394
-        System.out.println(part2(lines)); //236358
+    @Override
+    @ExpectedAnswer("236358")
+    @ExpectedAnswer(value = "145", input = "test1")
+    public long solvePart2(String input) {
+        return part2(input.stripTrailing());
     }
 
     public static long part1(String[] lines) {
+        return part1(lines[0]);
+    }
+
+    public static long part1(String input) {
         long sum = 0;
-        for (var field : lines[0].split(",")) sum += hash(field);
+
+        for (var field : input.split(",")) sum += hash(field);
+
         return sum;
     }
 
     public static long part2(String[] lines) {
+        return part2(lines[0]);
+    }
+
+    public static long part2(String sequence) {
         long sum = 0;
         List<Entry>[] map = new ArrayList[256];
         for (int i = 0; i < 256; i++) map[i] = new ArrayList<Entry>();
-        for (var input : lines[0].split(",")) {
+
+        for (var input : sequence.split(",")) {
             var fields = input.split("=");
             if (fields.length == 2) {
                 var key = fields[0];
@@ -43,6 +61,7 @@ public class Day15 {
             for (int j = 0; j < bucket.size(); j++)
                 sum += (long) (i + 1) * (j + 1) * bucket.get(j).value;
         }
+
         return sum;
     }
 

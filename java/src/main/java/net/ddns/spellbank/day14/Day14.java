@@ -1,22 +1,26 @@
 package net.ddns.spellbank.day14;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.ExpectedAnswer;
+import net.ddns.spellbank.harness.Solution;
 
 import java.util.*;
 
-public class Day14 {
+public class Day14 implements Solution {
 
     public record Point(int row, int col) {}
 
-    public static void main(String[] args) {
-        String file = "day14/input1";
-        String[] lines = InputFile.getLines(file);
+    @Override
+    @ExpectedAnswer("109661")
+    @ExpectedAnswer(value = "136", input = "test1")
+    public long solvePart1(String[] lines) {
+        return part1(getGrid(lines));
+    }
 
-        var grid = getGrid(lines);
-
-        System.out.println(part1(grid)); // 109661
-        grid = getGrid(lines);
-        System.out.println(part2(grid)); // 90176
+    @Override
+    @ExpectedAnswer("90176")
+    @ExpectedAnswer(value = "64", input = "test1")
+    public long solvePart2(String[] lines) {
+        return part2(getGrid(lines));
     }
 
     public static long part1(char[][] grid) {

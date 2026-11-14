@@ -1,22 +1,33 @@
 package net.ddns.spellbank.day08;
 
-import net.ddns.spellbank.utils.InputFile;
+import net.ddns.spellbank.harness.ExpectedAnswer;
+import net.ddns.spellbank.harness.Solution;
 import net.ddns.spellbank.utils.MyUtils;
 
 import java.util.Map;
 import java.util.HashMap;
 
-public class Day08 {
+public class Day08 implements Solution {
 
-    public static void main(String[] args) {
-        String file = "day08/input1";
-        String[] lines = InputFile.getLines(file);
-
+    @Override
+    @ExpectedAnswer("19783")
+    @ExpectedAnswer(value = "2", input = "test1")
+    @ExpectedAnswer(value = "6", input = "test2")
+    public long solvePart1(String[] lines) {
         var map = new HashMap<String, String[]>();
         var directions = parse(lines, map);
 
-        System.out.println(part1(directions, map, "AAA")); // 19783
-        System.out.println(part2(directions, map)); // 9177460370549
+        return part1(directions, map, "AAA");
+    }
+
+    @Override
+    @ExpectedAnswer("9177460370549")
+    @ExpectedAnswer(value = "6", input = "test3")
+    public long solvePart2(String[] lines) {
+        var map = new HashMap<String, String[]>();
+        var directions = parse(lines, map);
+
+        return part2(directions, map);
     }
 
     public static long part1(char[] directions, Map<String, String[]> map,String start) {
